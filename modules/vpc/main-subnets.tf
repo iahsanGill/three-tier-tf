@@ -1,69 +1,33 @@
-#VPC
-resource "aws_vpc" "three_tier_vpc" {
-  cidr_block = "10.0.0.0/16"
+# VPC
+resource "aws_vpc" "three-tier-vpc" {
+  cidr_block = var.vpc_cidr_block
   tags = {
-    "Name" = "three_tier_vpc"
+    "Name" = "${var.project_name}_vpc"
   }
 }
 
-#Public Sunets
-resource "aws_subnet" "three-tier-pub-sub-1" {
+# Public Subnets
+resource "aws_subnet" "public-subnets" {
+  count                   = length(var.availability_zones)
   vpc_id                  = aws_vpc.three-tier-vpc.id
-  cidr_block              = "10.0.0.0/28"
-  availability_zone       = "ap-southeast-1a"
-  map_public_ip_on_launch = "true"
+  cidr_block              = cidrsubnet(var.vpc_cidr_block, 4, count.index + 1)
+  availability_zone       = var.availability_zones[count.index]
+  map_public_ip_on_launch = true
 
   tags = {
-    Name = "three-tier-pub-sub-1"
-  }
-}
-
-resource "aws_subnet" "three-tier-pub-sub-2" {
-  vpc_id                  = aws_vpc.three-tier-vpc.id
-  cidr_block              = "10.0.0.16/28"
-  availability_zone       = "ap-southeast-1b"
-  map_public_ip_on_launch = "true"
-
-  tags = {
-    Name = "three-tier-pub-sub-2"
+    Name = "${var.project_name}-pub-sub-${count.index + 1}"
   }
 }
 
 # Private Subnets
-resource "aws_subnet" "three-tier-pvt-sub-1" {
+resource "aws_subnet" "private-subnets" {
+  count                   = length(var.availability_zones) * 2
   vpc_id                  = aws_vpc.three-tier-vpc.id
-  cidr_block              = "10.0.0.32/28"
-  availability_zone       = "ap-southeast-1a"
+  cidr_block              = cidrsubnet(var.vpc_cidr_block, 4, count.index + 3)
+  availability_zone       = var.availability_zones[count.index % length(var.availability_zones)]
   map_public_ip_on_launch = false
-  tags = {
-    Name = "three-tier-pvt-sub-1"
-  }
-}
-resource "aws_subnet" "three-tier-pvt-sub-2" {
-  vpc_id                  = aws_vpc.three-tier-vpc.id
-  cidr_block              = "10.0.0.48/28"
-  availability_zone       = "ap-southeast-1b"
-  map_public_ip_on_launch = false
-  tags = {
-    Name = "three-tier-pvt-sub-2"
-  }
-}
 
-resource "aws_subnet" "three-tier-pvt-sub-3" {
-  vpc_id                  = aws_vpc.three-tier-vpc.id
-  cidr_block              = "10.0.0.64/28"
-  availability_zone       = "ap-southeast-1a"
-  map_public_ip_on_launch = false
   tags = {
-    Name = "three-tier-pvt-sub-3"
-  }
-}
-resource "aws_subnet" "three-tier-pvt-sub-4" {
-  vpc_id                  = aws_vpc.three-tier-vpc.id
-  cidr_block              = "10.0.0.80/28"
-  availability_zone       = "ap-southeast-1b"
-  map_public_ip_on_launch = false
-  tags = {
-    Name = "three-tier-pvt-sub-4"
+    Name = "${var.project_name}-pvt-sub-${count.index + 1}"
   }
 }
