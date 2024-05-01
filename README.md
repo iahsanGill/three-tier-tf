@@ -13,7 +13,7 @@ This Terraform project automates the deployment of a highly available, secure th
 ## Architecture Diagram
 
 This is an overview of the architecture this deployment will build.
-![alt text](<1 DvuvxEPeuCgjefJugj4Idg.jpg>)
+![alt text](https://miro.medium.com/v2/resize:fit:761/1*DvuvxEPeuCgjefJugj4Idg.jpeg)
 
 ## Authors
 
