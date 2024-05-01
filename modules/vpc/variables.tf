@@ -1,6 +1,12 @@
 variable "project_name" {
-  description = "The name of project"
+  description = "The name of the project"
   type        = string
+}
+
+variable "region" {
+  description = "The aws region"
+  type        = string
+  default     = "ap-southeast-1"
 }
 
 variable "availability_zones" {
@@ -15,9 +21,10 @@ variable "vpc_cidr_block" {
   default     = "10.0.0.0/16"
 }
 
-variable "region" {
-  description = "The aws region"
-  type        = string
-  default     = "ap-southeast-1"
+variable "num_nat_gateways" {
+  description = "Number of nat  gateways in the vpc"
+  type        = number
+  default     = 2
 }
+
 

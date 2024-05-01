@@ -10,8 +10,8 @@ resource "aws_route_table" "three-tier-web-rt" {
   }
 }
 
-resource "aws_route_table" "three-tier-app-rt" {
-  count = length(aws_nat_gateway.three-tier-natgws)
+resource "aws_route_table" "three-tier-app-rts" {
+  count = local.num_nat_gateways
 
   vpc_id = aws_vpc.three-tier-vpc.id
   tags = {
@@ -25,18 +25,19 @@ resource "aws_route_table" "three-tier-app-rt" {
 }
 
 resource "aws_route_table_association" "public-rt-associations" {
-  count = local.public_subnets_count
+  count = local.num_public_subnets
 
   subnet_id      = aws_subnet.public-subnets[count.index].id
   route_table_id = aws_route_table.three-tier-web-rt.id
 }
 
 resource "aws_route_table_association" "private-rt-associations" {
-  count = local.private_subnets_count
+  count = local.num_private_subnets
 
   subnet_id      = aws_subnet.private-subnets[count.index].id
-  route_table_id = aws_route_table.three-tier-app-rt.id
+  route_table_id = aws_route_table.three-tier-app-rts[count.index % local.num_nat_gateways].id
 }
+
 
 
 

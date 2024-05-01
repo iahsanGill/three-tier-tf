@@ -2,7 +2,7 @@
 resource "aws_vpc" "three-tier-vpc" {
   cidr_block = var.vpc_cidr_block
   tags = {
-    "Name" = "${var.project_name}_vpc"
+    "Name" = "${var.project_name}-vpc"
   }
 }
 
@@ -23,7 +23,7 @@ resource "aws_subnet" "public-subnets" {
 resource "aws_subnet" "private-subnets" {
   count                   = length(var.availability_zones) * 2
   vpc_id                  = aws_vpc.three-tier-vpc.id
-  cidr_block              = cidrsubnet(var.vpc_cidr_block, 4, count.index + 3)
+  cidr_block              = cidrsubnet(var.vpc_cidr_block, 4, count.index + local.num_public_subnets + 1)
   availability_zone       = var.availability_zones[count.index % length(var.availability_zones)]
   map_public_ip_on_launch = false
 

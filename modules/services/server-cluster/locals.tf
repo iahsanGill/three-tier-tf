@@ -1,8 +1,18 @@
 locals {
+  all_ips      = "0.0.0.0/0"
   tcp_protocol = "tcp"
   any_protocol = "-1"
 
-  ingress_rules = [{
+  lb_ingress_rules = [{
+    port        = 80
+    description = "Allow HTTP access"
+    },
+    {
+      port        = 443
+      description = "Allow HTTPS access"
+    }
+  ]
+  ec2_ingress_rules = [{
     port        = 80
     description = "Allow HTTP access"
     },
@@ -13,11 +23,6 @@ locals {
     {
       port        = 22
       description = "Allow SSH access"
-  }]
-
-  rds_ingress_rules = [{
-    port        = 3306
-    description = "Allow MySQL access"
   }]
 
   egress_rules = [{

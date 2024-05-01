@@ -1,23 +1,21 @@
-# Create Load balancer - frontend tier
 resource "aws_lb" "ec2-lb" {
-  name               = "${var.project_name}-ec2-lb"
+  name               = "${var.project_name}-${var.tier}-lb"
   internal           = true
   load_balancer_type = "application"
 
   security_groups = [aws_security_group.ec2-alb-sg.id]
-  subnets         = [var.sub_1_id, var.sub_2_id]
+  subnets         = var.vpc_zone_identifier
 
   tags = {
     Environment = "${var.project_name}-ec2-lb"
   }
 }
 
-# Create Load Balancer Target Group - frontend tier
 resource "aws_lb_target_group" "ec2-lb-tg" {
-  name     = "${var.project_name}-ec2-lb-tg"
+  name     = "${var.project_name}-${var.tier}-lb-tg"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = aws_vpc.three-tier-vpc.id
+  vpc_id   = var.vpc_id
 
   health_check {
     interval            = 30
@@ -30,20 +28,15 @@ resource "aws_lb_target_group" "ec2-lb-tg" {
   }
 }
 
-# Create Load Balancer listener - frontend tier
 resource "aws_lb_listener" "ec2-lb-listener" {
   load_balancer_arn = aws_lb.ec2-lb.arn
-  port              = 80
-  protocol          = "HTTP"
+  port              = var.load_balancer_listener_configuration.port
+  protocol          = var.load_balancer_listener_configuration.protocol
 
-  # By default, return a simple 404 page
   default_action {
-    type = "fixed-response"
-
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "404: page not found"
-      status_code  = 404
-    }
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ec2-lb-tg.arn
   }
 }
+
+

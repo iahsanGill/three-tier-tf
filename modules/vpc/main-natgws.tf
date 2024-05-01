@@ -1,6 +1,6 @@
 # NatGW
 resource "aws_nat_gateway" "three-tier-natgws" {
-  count         = 1
+  count         = var.num_nat_gateways
   allocation_id = aws_eip.three-tier-nat-eips[count.index].id
   subnet_id     = aws_subnet.public-subnets[count.index].id
 

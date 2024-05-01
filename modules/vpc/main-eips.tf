@@ -1,6 +1,6 @@
 #Elastic ip
 resource "aws_eip" "three-tier-nat-eips" {
-  count = 1
+  count = var.num_nat_gateways
   tags = {
     Name = "${var.project_name}-nat-${count.index + 1}-eip"
   }
